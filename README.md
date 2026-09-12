@@ -1,17 +1,26 @@
 # Armario digital
 
-Proyecto de aplicación web personal para organizar prendas y crear conjuntos con ropa real.
+Aplicación web personal para organizar prendas reales, recomendar combinaciones y guardar conjuntos. No es una tienda online.
 
-## Estado inicial
+## Estado
 
-Repositorio inicializado para preparar su desarrollo. Todavía no contiene una aplicación, dependencias instalables ni un despliegue.
+Este cambio prepara la documentación del proyecto. Todavía no hay una aplicación ejecutable, `package.json`, dependencias que instalar, backend conectado ni despliegue. Tampoco se ha creado un entorno de Codex Cloud desde este repositorio.
 
-Las instrucciones y la especificación del producto se preparan en la rama `setup/codex`. Su existencia no implica que se haya creado o conectado un entorno de Codex Cloud.
+## Documentación
+
+- [Especificación completa](docs/SPEC.md): diseño, comportamiento y criterios de aceptación.
+- [Instrucciones para el agente](AGENTS.md): reglas que deben acompañar cada tarea.
+- [Plan de desarrollo](docs/PLAN.md): etapas pendientes y criterios de cierre.
+- [Conexión con Codex Cloud](docs/CODEX_SETUP.md): paso que requiere la cuenta del propietario.
+
+## Decisiones principales
+
+Cuatro usos: Trabajo, Salir, Casa y Dormir. Conjuntos es una quinta sección, no otro uso. Trabajo es exclusivo. Fotografías frontal obligatoria y trasera opcional. Ficha visible sencilla: título, categoría y uso. Interfaz oscura con cinco orbes animados y cuatro paneles interiores en escritorio. El probador realista y su rotación horizontal deben implementarse y verificarse; no se darán por terminados con una fotografía plana giratoria.
 
 ## Privacidad
 
-No subir a Git fotografías del armario, retratos, credenciales, archivos `.env` ni exportaciones personales. El almacenamiento de datos de la futura aplicación deberá ser privado y estar separado del código fuente.
+No subir fotografías de ropa, retratos, credenciales, `.env` ni exportaciones personales a Git. El almacenamiento de la aplicación será privado y separado del código. Esta documentación omite nombres personales y no incluye las imágenes de referencia de la conversación.
 
-## Trabajo
+## Inicio del desarrollo
 
-Revisar los cambios antes de fusionarlos. No desplegar en producción ni activar servicios de pago sin autorización.
+Leer `AGENTS.md`, `docs/SPEC.md` y `docs/PLAN.md`. Trabajar en una rama y entregar cambios para revisión. No fusionar, desplegar ni activar servicios de pago sin autorización. No ejecutar `npm install` mientras no exista un `package.json` real.

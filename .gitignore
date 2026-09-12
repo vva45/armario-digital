@@ -1,0 +1,33 @@
+# Dependencias y resultados de compilacion
+node_modules/
+.next/
+out/
+dist/
+build/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+
+# Variables y credenciales
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+.vercel/
+.supabase/
+
+# Archivos personales: no usar Git como almacen del armario
+private/
+private-uploads/
+uploads/
+exports/
+public/uploads/
+public/avatars/
+
+# Sistema y logs
+.DS_Store
+Thumbs.db
+*.log
