@@ -40,8 +40,13 @@ export function OrbNavigation() {
             <span className="orb__cloud orb__cloud--one" />
             <span className="orb__cloud orb__cloud--two" />
             <span className="orb__cloud orb__cloud--three" />
+            <span className="orb__veil" />
             <span className="orb__energy" />
             <span className="orb__current" />
+            <span className="orb__band" />
+            <span className="orb__lights" />
+            <span className="orb__sparkles" />
+            <span className="orb__shine" />
           </span>
         </span>
       </span>
