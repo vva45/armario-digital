@@ -1,17 +1,17 @@
 # Plan de producto por etapas
 
-Este plan traduce la [especificación](./SPEC.md) en entregas revisables. El estado inicial no contiene aplicación ni dependencias, por lo que esta revisión **solo prepara el proyecto**; no presenta ninguna función como implementada.
+Este plan traduce la [especificación](./SPEC.md) en entregas revisables. La base de interfaz y dominio del primer encargo está implementada; persistencia, autenticación y prendas reales siguen pendientes.
 
-## Estado de acceso (12 de septiembre de 2026)
+## Estado de acceso (13 de septiembre de 2026)
 
 - Repositorio de trabajo local: `/workspace/armario-digital`.
 - La identidad remota `vva45/armario-digital` **no se puede confirmar**: el clon no tiene ningún remoto configurado.
 - Rama recibida: `work`. No existe una referencia local o remota llamada `setup/codex`.
-- Antes de esta preparación solo existía `README.md`; no había `AGENTS.md`, `docs/SPEC.md` ni `docs/PLAN.md`.
+- Se intentó consultar `setup/codex` directamente en GitHub, pero el proxy devolvió HTTP 403. No se afirma haber recuperado contenido no leído; se conservaron íntegros `docs/SPEC.md` y `docs/PLAN.md` locales y se crearon las instrucciones solicitadas.
 - La especificación facilitada en la tarea queda conservada en `docs/SPEC.md` como referencia del proyecto.
 - No se han activado despliegues, proveedores, credenciales ni servicios de pago.
 
-## Etapa 0 — Preparación (esta entrega)
+## Etapa 0 — Preparación (completada)
 
 **Alcance:** conservar requisitos, registrar limitaciones verificables y acordar fases antes de construir.
 
@@ -20,7 +20,18 @@ Este plan traduce la [especificación](./SPEC.md) en entregas revisables. El est
 - [x] Especificación disponible en `docs/SPEC.md`.
 - [x] Plan por etapas y criterios de aceptación disponibles.
 - [x] Estado del repositorio, rama y remoto comprobado sin asumir identidades ausentes.
-- [x] Ninguna web, integración, despliegue ni servicio de pago creado.
+- [x] Ninguna integración, despliegue ni servicio de pago creado.
+
+## Encargo 1 — Base ejecutable (implementado, verificación parcial)
+
+- [x] Arquitectura Next.js App Router + React + TypeScript en la raíz.
+- [x] Home española con cinco orbes animados, rutas reales, foco y movimiento reducido.
+- [x] Pausa de movimiento fuera de vista o con pestaña oculta.
+- [x] Interior adaptable: cuatro columnas en escritorio y tres vistas con categorías accesibles en móvil.
+- [x] Estados honestos sin inventario ni backend ficticio.
+- [x] Tipos de dominio y validación de usos con pruebas.
+- [ ] Dependencias instaladas, lint, tipos y build: bloqueados por HTTP 403 del registro npm.
+- [ ] Revisión visual y capturas: pendientes hasta disponer de dependencias y navegador ejecutable.
 
 ## Etapa 1 — Primera versión funcional del armario
 
@@ -42,6 +53,8 @@ Este plan traduce la [especificación](./SPEC.md) en entregas revisables. El est
 - Pausar animaciones fuera de vista/pestaña y respetar movimiento reducido.
 - Construir cuatro columnas en escritorio, dos paneles en tableta y pestañas en móvil.
 - Mantener uso, categoría, filtros y selección al navegar.
+
+**Estado:** interfaz base completada en este encargo; la persistencia de selección y filtros se abordará junto al inventario real.
 
 **Aceptación:** escritorio y móvil no tienen scroll horizontal, todos los accesos funcionan con teclado/táctil, Conjuntos no se modela como uso y la UI está revisada visualmente en ambos tamaños.
 
