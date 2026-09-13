@@ -239,4 +239,101 @@ h1 { margin: 0; font-family: Georgia, serif; font-size: clamp(2.8rem, 6vw, 5.8re
   .orb__current { transform: rotate(-5deg); }
 }
 
+/* Pantallas internas: la navegación y la marca ocupan filas independientes para
+   conservar una zona táctil clara incluso en los móviles más estrechos. */
+.internal-header { margin: 0 auto 22px; }
+.internal-header__top { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 20px; }
+.wordmark { margin: 0; color: #d9d5cc; font-size: .72rem; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; white-space: nowrap; }
+.internal-header__main { display: flex; align-items: end; gap: 24px; padding-top: 22px; border-top: 1px solid var(--line); }
+.internal-header__main h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); }
+.internal-header nav { display: flex; gap: 5px; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+.internal-header nav::-webkit-scrollbar { display: none; }
+.internal-header nav a { padding: 10px 13px; border-radius: 999px; color: var(--muted); white-space: nowrap; }
+.internal-header nav a[aria-current=page] { background: var(--text); color: var(--bg); }
+.back { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; padding: 10px 15px; }
+.wardrobe-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 14px; }
+.wardrobe-actions p { margin: 0; color: var(--muted); }
+.wardrobe-actions strong { color: var(--text); }
+.button { min-height: 44px; padding: 11px 17px; border: 1px solid var(--text); border-radius: 999px; background: var(--text); color: var(--bg); cursor: pointer; font-weight: 700; }
+.button--secondary { margin-top: 8px; border-color: #5b6670; background: #31373c; color: var(--text); }
+.button--ghost { border-color: var(--line); background: transparent; color: var(--text); }
+.categories ul { margin: 18px 0 0; padding: 0; list-style: none; }
+.categories li { display: flex; justify-content: space-between; gap: 8px; padding: 11px 0; border-bottom: 1px solid var(--line); color: #ddd9d1; }
+.categories li span { color: var(--muted); }
+.small-empty { display: grid; min-height: 190px; align-content: center; justify-items: center; text-align: center; }
+.small-empty > span { color: #82909c; font-size: 2rem; }
+.garment-list { display: grid; grid-template-columns: repeat(auto-fill,minmax(190px,1fr)); gap: 14px; margin-top: 18px; }
+.garment-card { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: #15181b; transition: border-color .2s, transform .2s; }
+.garment-card:hover { transform: translateY(-2px); }
+.garment-card.is-selected { border-color: #d9eaff; box-shadow: 0 0 0 2px #d9eaff33; }
+.garment-card__select { position: relative; display: block; width: 100%; aspect-ratio: 4/5; overflow: hidden; border: 0; background: #272c30; cursor: pointer; }
+.garment-card__image { position: absolute; inset: 0; background-position: center; background-size: cover; transition: opacity .35s ease, transform .35s ease; }
+.garment-card__image--back { opacity: 0; }
+.garment-card__image--back.is-visible { opacity: 1; }
+.garment-card__select:hover .garment-card__image { transform: scale(1.025); }
+@media (hover:hover) and (pointer:fine) { .garment-card__select:hover .garment-card__image--back { opacity: 1; } }
+.garment-card__body { padding: 14px; }
+.garment-card__heading { display: flex; justify-content: space-between; gap: 8px; }
+.garment-card h3 { margin: 0 0 4px; font: 400 1.12rem Georgia,serif; }
+.garment-card__heading p { margin: 0; font-size: .84rem; }
+.favorite { width: 40px; height: 40px; flex: 0 0 40px; border: 0; border-radius: 50%; background: #282d31; color: #f1d47e; cursor: pointer; font-size: 1.35rem; }
+.tag-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; }
+.tag-list span { padding: 4px 8px; border: 1px solid #41484e; border-radius: 999px; color: #c4c8ca; font-size: .72rem; }
+.garment-note { margin-bottom: 0; font-size: .8rem; }
+.flip-control { display: none; width: 100%; min-height: 42px; margin-top: 12px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--text); }
+.selected-label { display: block; margin-top: 10px; color: #cfe4f4; font-size: .72rem; }
+.preview-image { width: min(100%,300px); aspect-ratio: 4/5; margin: 20px auto; border-radius: 45% 45% 24px 24px; background-position: center; background-size: cover; }
+.garment-dialog { width: min(680px,calc(100% - 28px)); max-height: calc(100dvh - 28px); overflow: auto; padding: 26px; border: 1px solid #4b5157; border-radius: 24px; background: #1b1f22; color: var(--text); box-shadow: 0 28px 100px #000b; }
+.garment-dialog::backdrop { background: #080a0ccd; backdrop-filter: blur(5px); }
+.dialog-heading { display: flex; align-items: start; justify-content: space-between; gap: 18px; }
+.dialog-heading h2 { margin: 0; font: 400 2.2rem Georgia,serif; }
+.icon-button { width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--text); cursor: pointer; font-size: 1.7rem; }
+.session-notice { padding: 11px 13px; border-left: 3px solid #7e94a8; background: #252a2f; color: #c0c6cb; font-size: .85rem; line-height: 1.5; }
+.garment-dialog form { display: grid; gap: 16px; }
+.garment-dialog label, .garment-dialog legend { color: #e9e5dc; font-size: .86rem; font-weight: 700; }
+.garment-dialog label > span, .garment-dialog label > strong { float: right; color: var(--muted); font-size: .68rem; font-weight: 500; }
+.garment-dialog input:not([type=checkbox]), .garment-dialog select, .garment-dialog textarea { display: block; width: 100%; min-height: 46px; margin-top: 7px; padding: 10px 12px; border: 1px solid #454b50; border-radius: 10px; background: #111416; color: var(--text); }
+.garment-dialog textarea { min-height: 80px; resize: vertical; }
+.image-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.garment-dialog fieldset { margin: 0; padding: 14px; border: 1px solid var(--line); border-radius: 14px; }
+.garment-dialog fieldset > p { margin: 4px 0 12px; color: var(--muted); font-size: .8rem; }
+.check-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 7px; }
+.check-grid label { display: flex; min-height: 42px; align-items: center; gap: 7px; padding: 8px; border: 1px solid var(--line); border-radius: 9px; cursor: pointer; }
+.check-grid input { accent-color: #d9eaff; }
+.form-error { margin: 0; color: #ffb2aa; font-weight: 700; }
+.dialog-actions { display: flex; justify-content: end; gap: 9px; }
+.outfits-page { padding-top: max(24px,env(safe-area-inset-top)); }
+
+@media(max-width:800px) {
+  .wardrobe { padding: max(14px,env(safe-area-inset-top)) 14px 24px; overflow-x: clip; }
+  .internal-header { margin-bottom: 16px; }
+  .internal-header__top { min-height: 52px; }
+  .internal-header__main { display: block; padding-top: 18px; }
+  .internal-header__main h1 { font-size: 2.45rem; }
+  .internal-header nav { margin: 17px -14px 0; padding: 0 14px 4px; }
+  .wardrobe-actions { margin-bottom: 14px; }
+  .wardrobe-actions p { font-size: .85rem; }
+  .wardrobe-grid { display: block; }
+  .panel { min-height: 58vh; padding: 18px; }
+  .categories.is-active { min-height: 0; }
+  .garment-list { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+  .garment-card__body { padding: 11px; }
+  .flip-control { display: block; }
+  .outfits-page { padding: max(14px,env(safe-area-inset-top)) 14px 24px; overflow-x: clip; }
+  .image-fields { grid-template-columns: 1fr; }
+  .check-grid { grid-template-columns: 1fr 1fr; }
+  .garment-dialog { padding: 20px 16px; }
+}
+
+@media(max-width:380px) {
+  .wordmark { font-size: .65rem; letter-spacing: .14em; }
+  .back { padding-inline: 12px; }
+  .button { padding-inline: 13px; }
+  .wardrobe-actions p { max-width: 105px; }
+  .mobile-tabs button { font-size: .78rem; }
+  .garment-list { grid-template-columns: 1fr; }
+}
+
 [data-animated=false] .orb::before { animation-play-state: paused !important; }
+.card-category { display: block; margin-top: 12px; color: var(--muted); font-size: .68rem; font-weight: 700; text-transform: uppercase; }
+.card-category select { display: block; width: 100%; min-height: 38px; margin-top: 5px; padding: 7px; border: 1px solid var(--line); border-radius: 9px; background: #22272b; color: var(--text); font-size: .78rem; text-transform: none; }
