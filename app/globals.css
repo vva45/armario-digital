@@ -99,33 +99,75 @@ h1 { margin: 0; font-family: Georgia, serif; font-size: clamp(2.8rem, 6vw, 5.8re
 .orb__lights { inset: 8%; border-radius: 50%; background: radial-gradient(circle at 24% 33%, color-mix(in srgb, var(--c) 90%, transparent) 0 1.5%, transparent 8%), radial-gradient(circle at 72% 26%, color-mix(in srgb, var(--a) 82%, transparent) 0 2%, transparent 11%), radial-gradient(circle at 67% 76%, color-mix(in srgb, var(--c) 72%, transparent) 0 1%, transparent 9%), radial-gradient(circle at 33% 69%, color-mix(in srgb, var(--b) 72%, transparent) 0 2%, transparent 12%); mix-blend-mode: screen; animation: lights-roam var(--pulse) ease-in-out infinite alternate; }
 .orb__sparkles { inset: 0; border-radius: 50%; background: radial-gradient(circle at 19% 56%, #fff 0 1px, transparent 2px), radial-gradient(circle at 53% 18%, color-mix(in srgb, var(--c) 95%, white) 0 1px, transparent 2.5px), radial-gradient(circle at 81% 49%, #fff 0 1px, transparent 2px), radial-gradient(circle at 46% 82%, color-mix(in srgb, var(--a) 80%, white) 0 1.5px, transparent 3px); filter: drop-shadow(0 0 5px var(--c)); mix-blend-mode: screen; opacity: .35; animation: sparkle-pulse var(--pulse) ease-in-out infinite; }
 .orb__shine { width: 54%; height: 28%; left: 10%; top: 8%; border-radius: 50%; background: radial-gradient(ellipse, color-mix(in srgb, white 48%, transparent), transparent 68%); filter: blur(8px); mix-blend-mode: screen; opacity: .55; transform: rotate(-24deg); animation: shine-breathe var(--pulse) ease-in-out infinite alternate; }
+.orb__horizon, .orb__filaments, .orb__accents { inset: 0; border-radius: 50%; mix-blend-mode: screen; will-change: transform, opacity; }
+.orb__horizon { z-index: 0; }
+.orb__filaments { z-index: 1; }
+.orb__accents { z-index: 2; }
 .orb-link:hover .orb, .orb-link:focus-visible .orb { transform: scale(1.025); filter: brightness(1.12) drop-shadow(0 20px 43px color-mix(in srgb, var(--b) 38%, transparent)); }
 .orb-link:hover .orb::before, .orb-link:focus-visible .orb::before { opacity: .96; }
 .orb-link:focus-visible { outline: 3px solid var(--focus); outline-offset: 10px; }
 
 .orb-link--going-out { --a: #ed334d; --b: #315fff; --c: #d45bec; --drift: 9s; --pulse: 6.8s; --cloud-one: 8s; --cloud-two: 10s; --cloud-three: 12s; --current: 8.5s; }
+
+/* Trabajo: una retícula profunda y corrientes paralelas mantienen un pulso
+   constante; la energía se desplaza con orden en lugar de arremolinarse. */
+.orb-link--work .orb__horizon { background: repeating-linear-gradient(90deg, transparent 0 12%, #d8ecff12 12.5% 13%, transparent 13.5% 24%), repeating-linear-gradient(0deg, transparent 0 15%, #92b5d11a 15.5% 16%, transparent 16.5% 30%); filter: blur(.3px); opacity: .7; transform: perspective(100px) rotateX(58deg) rotateZ(-8deg) scale(1.35); animation: work-grid 14s linear infinite; }
+.orb-link--work .orb__filaments { inset: 14% -18%; background: repeating-linear-gradient(168deg, transparent 0 13%, #f4fbff80 14%, #82a9c450 15%, transparent 17% 27%); filter: blur(2px); opacity: .7; animation: work-stream 9s ease-in-out infinite alternate; }
+.orb-link--work .orb__accents { background: radial-gradient(ellipse at 28% 33%, #eaf7ff 0 2%, transparent 3% 10%), radial-gradient(ellipse at 69% 57%, #bad9ee 0 1.5%, transparent 3% 11%), radial-gradient(ellipse at 43% 76%, #fff 0 1%, transparent 2% 9%); opacity: .52; animation: work-pulse 6s ease-in-out infinite; }
+.orb-link--work .orb__cloud { opacity: .45; }
+.orb-link--work .orb__veil { opacity: .42; }
+.orb-link--work .orb__band { height: 14%; filter: blur(1px); opacity: .8; }
+
 .orb-link--going-out .orb-stage { animation-name: drift-going-out; animation-duration: 27s; }
 .orb-link--going-out .orb__current { height: 50%; top: 25%; transform: rotate(-16deg); }
 .orb-link--going-out .orb__band { height: 32%; top: 35%; opacity: .9; filter: blur(2px); animation-duration: 5.4s; }
 .orb-link--going-out .orb__lights { opacity: 1; animation-duration: 4.8s; }
 .orb-link--going-out .orb__sparkles { opacity: .72; animation: nightlife-flash 7.6s ease-in-out infinite; }
 .orb-link--going-out .orb__veil { opacity: .9; animation-duration: 6.5s; }
+.orb-link--going-out .orb__horizon { background: linear-gradient(105deg, transparent 20%, #365dff4d 21% 27%, transparent 29% 44%, #ff31594f 46% 52%, transparent 54%), linear-gradient(72deg, transparent 34%, #e460ff47 36% 42%, transparent 45%); filter: blur(5px); opacity: .9; animation: club-beams 6s ease-in-out infinite alternate; }
+.orb-link--going-out .orb__filaments { inset: -15%; background: conic-gradient(from 25deg, transparent 0 8%, #ff31595c 10% 12%, transparent 15% 36%, #667bff70 39% 42%, transparent 45% 67%, #ef85ff5c 70% 72%, transparent 75%); filter: blur(3px); opacity: .9; animation: nightlife-spin 12s linear infinite; }
+.orb-link--going-out .orb__accents { background: radial-gradient(ellipse at 21% 28%, #fff 0 1%, #ff3159 2%, transparent 8%), radial-gradient(ellipse at 76% 38%, #fff 0 1%, #8798ff 2%, transparent 9%), radial-gradient(ellipse at 58% 77%, #fff 0 1%, #ef85ff 2%, transparent 7%); animation: nightlife-accents 5.8s ease-in-out infinite; }
 .orb-link--home { --a: #e99538; --b: #bd642e; --c: #ffe1a3; --drift: 13s; --pulse: 10s; --cloud-one: 17s; --cloud-two: 20s; --cloud-three: 22s; --current: 18s; }
 .orb-link--home .orb-stage { animation-name: drift-home; animation-duration: 35s; }
 .orb-link--home .orb__cloud { filter: blur(19px); }
 .orb-link--home .orb__band { opacity: .38; filter: blur(7px); }
 .orb-link--home .orb__lights { opacity: .58; }
+.orb-link--home .orb__horizon { inset: 18% -8% -12%; background: radial-gradient(ellipse at 45% 68%, #ffcf795c, transparent 52%), linear-gradient(0deg, #71311230, transparent 58%); filter: blur(8px); animation: hearth-breathe 12s ease-in-out infinite alternate; }
+.orb-link--home .orb__filaments { inset: 8%; background: radial-gradient(ellipse at 30% 34%, #fff2c873, transparent 22%), radial-gradient(ellipse at 72% 61%, #ffb75f52, transparent 28%), radial-gradient(ellipse at 44% 78%, #ffd89b35, transparent 24%); filter: blur(11px); animation: home-warmth 16s ease-in-out infinite alternate; }
+.orb-link--home .orb__accents { inset: 18%; background: radial-gradient(circle at 26% 68%, #fff1c4 0 1%, transparent 5%), radial-gradient(circle at 68% 31%, #ffd593 0 1%, transparent 6%); filter: blur(1px); opacity: .48; animation: home-glow 9s ease-in-out infinite; }
 .orb-link--sleep { --a: #38c9c0; --b: #4966b5; --c: #c3e5ef; --drift: 15s; --pulse: 13s; --cloud-one: 22s; --cloud-two: 25s; --cloud-three: 28s; --current: 23s; }
 .orb-link--sleep .orb-stage { animation-name: drift-sleep; animation-duration: 36s; }
 .orb-link--sleep .orb__current { opacity: .4; filter: blur(5px); }
 .orb-link--sleep .orb__veil { inset: -8%; background: repeating-radial-gradient(ellipse at 30% 55%, transparent 0 9%, color-mix(in srgb, var(--c) 30%, transparent) 15%, color-mix(in srgb, var(--a) 12%, transparent) 20%, transparent 28%); filter: blur(11px); opacity: .9; }
 .orb-link--sleep .orb__band { height: 30%; top: 42%; filter: blur(9px); opacity: .42; }
 .orb-link--sleep .orb__sparkles { opacity: .22; }
+.orb-link--sleep .orb__horizon { inset: 25% -20% -8%; background: repeating-radial-gradient(ellipse at 50% 100%, transparent 0 12%, #bfeeff28 15% 19%, transparent 25% 34%); filter: blur(8px); opacity: .8; animation: mist-rise 20s ease-in-out infinite alternate; }
+.orb-link--sleep .orb__filaments { inset: 5% -25%; background: radial-gradient(ellipse at 24% 55%, #d8f7ff7a, transparent 29%), radial-gradient(ellipse at 65% 42%, #9cdddc54, transparent 32%), radial-gradient(ellipse at 78% 76%, #839ee04d, transparent 30%); filter: blur(15px); opacity: .76; animation: sleep-clouds 25s ease-in-out infinite alternate; }
+.orb-link--sleep .orb__accents { background: radial-gradient(circle at 68% 24%, #e9fbff 0 1%, transparent 4%), radial-gradient(circle at 30% 42%, #c8f9f4 0 .7%, transparent 3%); filter: blur(.4px); opacity: .3; animation: sleep-breath 12s ease-in-out infinite; }
 .orb-link--outfits { --a: #e6c98f; --b: #8968bd; --c: #fffaf0; --drift: 12s; --pulse: 9s; --cloud-one: 14s; --cloud-two: 18s; --cloud-three: 21s; --current: 12s; }
 .orb-link--outfits .orb-stage { animation-name: drift-outfits; animation-duration: 31.5s; }
 .orb-link--outfits .orb__current { height: 48%; top: 27%; transform: rotate(12deg); }
 .orb-link--outfits .orb__band { height: 38%; top: 31%; opacity: .78; transform: rotate(-12deg); }
 .orb-link--outfits .orb__lights { opacity: .78; }
+.orb-link--outfits .orb__horizon { inset: 6%; border: 1px solid #fff5d83d; box-shadow: inset 0 0 24px #d8b8ff29; opacity: .7; animation: curated-orbit 18s ease-in-out infinite alternate; }
+.orb-link--outfits .orb__filaments { inset: -12%; background: repeating-conic-gradient(from 32deg, transparent 0 11%, #fff4d94f 12% 13%, transparent 15% 27%, #cdb8ef45 28% 30%, transparent 32% 45%); mask: radial-gradient(transparent 29%, #000 32% 54%, transparent 57%); filter: blur(2px); opacity: .85; animation: curated-weave 20s linear infinite; }
+.orb-link--outfits .orb__accents { inset: 10%; background: radial-gradient(circle at 28% 36%, #fff 0 1.2%, #eed8a8 2%, transparent 7%), radial-gradient(circle at 71% 63%, #fff 0 1%, #c7acef 2%, transparent 7%), radial-gradient(circle at 53% 49%, #fff9e8 0 1%, transparent 5%); opacity: .72; animation: curated-meet 8s ease-in-out infinite alternate; }
+
+@keyframes work-grid { to { background-position: 24px 0, 0 30px; } }
+@keyframes work-stream { to { transform: translate(8%, -5%); opacity: .9; } }
+@keyframes work-pulse { 50% { transform: scale(1.04); opacity: .8; } }
+@keyframes club-beams { to { transform: translateX(8%) rotate(7deg) scale(1.1); filter: blur(3px) brightness(1.25); } }
+@keyframes nightlife-spin { to { transform: rotate(360deg) scale(1.05); } }
+@keyframes nightlife-accents { 0%, 28%, 36%, 68%, 76%, 100% { opacity: .38; } 32%, 72% { opacity: .95; filter: brightness(1.35); } }
+@keyframes hearth-breathe { to { transform: translateY(-5%) scale(1.08); opacity: .72; } }
+@keyframes home-warmth { to { transform: translate(5%, 4%) scale(1.08); opacity: .9; } }
+@keyframes home-glow { 50% { opacity: .75; transform: scale(1.1); } }
+@keyframes mist-rise { to { transform: translate(-4%, -9%) scale(1.08); opacity: .56; } }
+@keyframes sleep-clouds { to { transform: translate(9%, -4%) scale(.96); opacity: .9; } }
+@keyframes sleep-breath { 50% { opacity: .52; transform: scale(1.06); } }
+@keyframes curated-orbit { to { transform: rotate(18deg) scale(.93); border-radius: 42%; opacity: .9; } }
+@keyframes curated-weave { to { transform: rotate(360deg); } }
+@keyframes curated-meet { to { transform: rotate(-9deg) scale(1.08); filter: brightness(1.18); } }
 
 /* Recorridos acotados con tramos largos y curvas distintas. El primer y último
    vector coinciden para que cada deriva se repita sin un salto perceptible. */
