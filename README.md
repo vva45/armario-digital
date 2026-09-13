@@ -17,6 +17,8 @@ npm run dev
 
 Abre `http://localhost:3000`. Para producción: `npm run build && npm start`. Comprobaciones disponibles: `npm run typecheck`, `npm run lint` y `npm test`.
 
+El despliegue en Vercel está identificado como Next.js y publica la salida `.next`; no debe configurarse `public` como directorio de salida, ya que esa carpeta solo está destinada a recursos estáticos.
+
 La red del entorno de preparación devolvió HTTP 403 tanto para GitHub como para npm, por lo que no fue posible recuperar `setup/codex` ni generar `package-lock.json`. Ejecuta `npm install` con acceso al registro antes de considerar verificadas la instalación y la compilación.
 
 ## Privacidad
