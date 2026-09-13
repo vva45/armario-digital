@@ -14,17 +14,37 @@ const destinations = [
 export function OrbNavigation() {
   const ref = useRef<HTMLElement>(null);
   const [active, setActive] = useState(true);
+
   useEffect(() => {
-    const update = () => setActive(document.visibilityState === "visible");
-    const observer = new IntersectionObserver(([entry]) => setActive(entry.isIntersecting && document.visibilityState === "visible"));
+    let isIntersecting = false;
+    const update = () => setActive(isIntersecting && document.visibilityState === "visible");
+    const observer = new IntersectionObserver(([entry]) => {
+      isIntersecting = entry.isIntersecting;
+      update();
+    });
+
     if (ref.current) observer.observe(ref.current);
     document.addEventListener("visibilitychange", update);
-    return () => { observer.disconnect(); document.removeEventListener("visibilitychange", update); };
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", update);
+    };
   }, []);
+
   return <nav ref={ref} className="orbits" aria-label="Secciones principales" data-animated={active}>
     {destinations.map((item, index) => <Link className={`orb-link orb-link--${item.tone}`} href={item.href} key={item.href} style={{ "--delay": `${index * -1.7}s` } as React.CSSProperties}>
-      <span className="orb" aria-hidden="true"><span className="orb__energy" /></span>
-      <strong>{item.label}</strong><small>{item.detail}</small>
+      <span className="orb" aria-hidden="true">
+        <span className="orb__interior">
+          <span className="orb__ambient" />
+          <span className="orb__cloud orb__cloud--one" />
+          <span className="orb__cloud orb__cloud--two" />
+          <span className="orb__cloud orb__cloud--three" />
+          <span className="orb__energy" />
+          <span className="orb__current" />
+        </span>
+      </span>
+      <strong>{item.label}</strong>
+      <small>{item.detail}</small>
     </Link>)}
   </nav>;
 }
