@@ -51,7 +51,7 @@ h1 { margin: 0; font-family: Georgia, serif; font-size: clamp(2.8rem, 6vw, 5.8re
   width: 100%;
   height: calc(clamp(150px, 17vw, 220px) + (var(--float-y) * 2));
   place-items: center;
-  animation: drift-work 36s linear infinite;
+  animation: drift-work 32s linear infinite;
   animation-delay: var(--delay);
   will-change: transform;
 }
@@ -94,22 +94,38 @@ h1 { margin: 0; font-family: Georgia, serif; font-size: clamp(2.8rem, 6vw, 5.8re
 .orb__cloud--three { width: 50%; height: 74%; left: 31%; top: 4%; background: radial-gradient(ellipse, color-mix(in srgb, var(--a) 68%, transparent), transparent 69%); filter: blur(18px); opacity: .5; animation: cloud-three var(--cloud-three) ease-in-out infinite alternate; }
 .orb__energy { inset: 7%; border-radius: 50%; background: conic-gradient(from 80deg, transparent 0 9%, color-mix(in srgb, var(--c) 42%, transparent) 17%, transparent 30% 43%, color-mix(in srgb, var(--b) 62%, transparent) 54%, transparent 66% 83%, color-mix(in srgb, var(--a) 38%, transparent) 92%, transparent); filter: blur(9px); mix-blend-mode: screen; opacity: .72; animation: energy-flow var(--current) ease-in-out infinite alternate-reverse; }
 .orb__current { width: 125%; height: 36%; left: -14%; top: 37%; border: 2px solid color-mix(in srgb, var(--c) 50%, transparent); border-color: color-mix(in srgb, var(--c) 50%, transparent) transparent color-mix(in srgb, var(--b) 48%, transparent); border-radius: 50%; box-shadow: 0 0 15px color-mix(in srgb, var(--c) 32%, transparent), inset 0 0 12px color-mix(in srgb, var(--b) 24%, transparent); filter: blur(2px); mix-blend-mode: screen; opacity: .68; animation: current-cross var(--current) ease-in-out infinite alternate; }
+.orb__veil { inset: -18%; border-radius: 43%; background: repeating-radial-gradient(ellipse at 35% 50%, transparent 0 12%, color-mix(in srgb, var(--a) 18%, transparent) 17%, transparent 24%); filter: blur(7px); mix-blend-mode: screen; opacity: .75; animation: veil-drift var(--cloud-two) ease-in-out infinite alternate; }
+.orb__band { width: 130%; height: 22%; left: -16%; top: 48%; border-radius: 50%; background: linear-gradient(90deg, transparent 3%, color-mix(in srgb, var(--b) 16%, transparent), color-mix(in srgb, var(--c) 62%, transparent) 46%, color-mix(in srgb, var(--a) 28%, transparent) 67%, transparent 96%); box-shadow: 0 0 18px color-mix(in srgb, var(--c) 28%, transparent); filter: blur(3px); mix-blend-mode: screen; opacity: .58; animation: band-flow var(--current) ease-in-out infinite alternate; }
+.orb__lights { inset: 8%; border-radius: 50%; background: radial-gradient(circle at 24% 33%, color-mix(in srgb, var(--c) 90%, transparent) 0 1.5%, transparent 8%), radial-gradient(circle at 72% 26%, color-mix(in srgb, var(--a) 82%, transparent) 0 2%, transparent 11%), radial-gradient(circle at 67% 76%, color-mix(in srgb, var(--c) 72%, transparent) 0 1%, transparent 9%), radial-gradient(circle at 33% 69%, color-mix(in srgb, var(--b) 72%, transparent) 0 2%, transparent 12%); mix-blend-mode: screen; animation: lights-roam var(--pulse) ease-in-out infinite alternate; }
+.orb__sparkles { inset: 0; border-radius: 50%; background: radial-gradient(circle at 19% 56%, #fff 0 1px, transparent 2px), radial-gradient(circle at 53% 18%, color-mix(in srgb, var(--c) 95%, white) 0 1px, transparent 2.5px), radial-gradient(circle at 81% 49%, #fff 0 1px, transparent 2px), radial-gradient(circle at 46% 82%, color-mix(in srgb, var(--a) 80%, white) 0 1.5px, transparent 3px); filter: drop-shadow(0 0 5px var(--c)); mix-blend-mode: screen; opacity: .35; animation: sparkle-pulse var(--pulse) ease-in-out infinite; }
+.orb__shine { width: 54%; height: 28%; left: 10%; top: 8%; border-radius: 50%; background: radial-gradient(ellipse, color-mix(in srgb, white 48%, transparent), transparent 68%); filter: blur(8px); mix-blend-mode: screen; opacity: .55; transform: rotate(-24deg); animation: shine-breathe var(--pulse) ease-in-out infinite alternate; }
 .orb-link:hover .orb, .orb-link:focus-visible .orb { transform: scale(1.025); filter: brightness(1.12) drop-shadow(0 20px 43px color-mix(in srgb, var(--b) 38%, transparent)); }
 .orb-link:hover .orb::before, .orb-link:focus-visible .orb::before { opacity: .96; }
 .orb-link:focus-visible { outline: 3px solid var(--focus); outline-offset: 10px; }
 
 .orb-link--going-out { --a: #ed334d; --b: #315fff; --c: #d45bec; --drift: 9s; --pulse: 6.8s; --cloud-one: 8s; --cloud-two: 10s; --cloud-three: 12s; --current: 8.5s; }
-.orb-link--going-out .orb-stage { animation-name: drift-going-out; animation-duration: 30s; }
+.orb-link--going-out .orb-stage { animation-name: drift-going-out; animation-duration: 27s; }
 .orb-link--going-out .orb__current { height: 50%; top: 25%; transform: rotate(-16deg); }
+.orb-link--going-out .orb__band { height: 32%; top: 35%; opacity: .9; filter: blur(2px); animation-duration: 5.4s; }
+.orb-link--going-out .orb__lights { opacity: 1; animation-duration: 4.8s; }
+.orb-link--going-out .orb__sparkles { opacity: .72; animation: nightlife-flash 7.6s ease-in-out infinite; }
+.orb-link--going-out .orb__veil { opacity: .9; animation-duration: 6.5s; }
 .orb-link--home { --a: #e99538; --b: #bd642e; --c: #ffe1a3; --drift: 13s; --pulse: 10s; --cloud-one: 17s; --cloud-two: 20s; --cloud-three: 22s; --current: 18s; }
-.orb-link--home .orb-stage { animation-name: drift-home; animation-duration: 39s; }
+.orb-link--home .orb-stage { animation-name: drift-home; animation-duration: 35s; }
 .orb-link--home .orb__cloud { filter: blur(19px); }
+.orb-link--home .orb__band { opacity: .38; filter: blur(7px); }
+.orb-link--home .orb__lights { opacity: .58; }
 .orb-link--sleep { --a: #38c9c0; --b: #4966b5; --c: #c3e5ef; --drift: 15s; --pulse: 13s; --cloud-one: 22s; --cloud-two: 25s; --cloud-three: 28s; --current: 23s; }
-.orb-link--sleep .orb-stage { animation-name: drift-sleep; animation-duration: 40s; }
+.orb-link--sleep .orb-stage { animation-name: drift-sleep; animation-duration: 36s; }
 .orb-link--sleep .orb__current { opacity: .4; filter: blur(5px); }
+.orb-link--sleep .orb__veil { inset: -8%; background: repeating-radial-gradient(ellipse at 30% 55%, transparent 0 9%, color-mix(in srgb, var(--c) 30%, transparent) 15%, color-mix(in srgb, var(--a) 12%, transparent) 20%, transparent 28%); filter: blur(11px); opacity: .9; }
+.orb-link--sleep .orb__band { height: 30%; top: 42%; filter: blur(9px); opacity: .42; }
+.orb-link--sleep .orb__sparkles { opacity: .22; }
 .orb-link--outfits { --a: #e6c98f; --b: #8968bd; --c: #fffaf0; --drift: 12s; --pulse: 9s; --cloud-one: 14s; --cloud-two: 18s; --cloud-three: 21s; --current: 12s; }
-.orb-link--outfits .orb-stage { animation-name: drift-outfits; animation-duration: 35s; }
+.orb-link--outfits .orb-stage { animation-name: drift-outfits; animation-duration: 31.5s; }
 .orb-link--outfits .orb__current { height: 48%; top: 27%; transform: rotate(12deg); }
+.orb-link--outfits .orb__band { height: 38%; top: 31%; opacity: .78; transform: rotate(-12deg); }
+.orb-link--outfits .orb__lights { opacity: .78; }
 
 /* Recorridos acotados con tramos largos y curvas distintas. El primer y último
    vector coinciden para que cada deriva se repita sin un salto perceptible. */
@@ -157,6 +173,12 @@ h1 { margin: 0; font-family: Georgia, serif; font-size: clamp(2.8rem, 6vw, 5.8re
 @keyframes cloud-three { to { transform: translate(13%, -16%) scale(1.14); opacity: .7; } }
 @keyframes energy-flow { to { transform: translate(5%, -4%) scale(1.1) rotate(24deg); opacity: .54; } }
 @keyframes current-cross { to { transform: translateY(15%) rotate(-9deg) scaleX(.92); opacity: .48; } }
+@keyframes veil-drift { to { transform: translate(8%, -6%) rotate(20deg) scale(1.08); opacity: .48; } }
+@keyframes band-flow { to { transform: translateY(-28%) rotate(8deg) scaleX(.88); opacity: .82; } }
+@keyframes lights-roam { to { transform: translate(-5%, 7%) rotate(-9deg) scale(1.08); filter: brightness(1.25); } }
+@keyframes sparkle-pulse { 0%, 34%, 100% { opacity: .25; } 48% { opacity: .72; } 64% { opacity: .38; } }
+@keyframes shine-breathe { to { transform: translate(13%, 7%) rotate(-17deg) scale(1.15); opacity: .32; } }
+@keyframes nightlife-flash { 0%, 18%, 25%, 56%, 63%, 100% { opacity: .36; filter: drop-shadow(0 0 4px var(--c)); } 21%, 59% { opacity: .92; filter: drop-shadow(0 0 9px white); } }
 
 .wardrobe{min-height:100vh;padding:26px}.toolbar{display:flex;align-items:center;gap:24px;margin-bottom:24px}.toolbar h1{font-size:2.5rem}.back{padding:12px 14px;border:1px solid var(--line);border-radius:999px}.toolbar nav{display:flex;gap:5px;margin-left:auto}.toolbar nav a{padding:10px 12px;border-radius:999px;color:var(--muted)}.toolbar nav a[aria-current=page]{background:var(--text);color:var(--bg)}.wardrobe-grid{display:grid;grid-template-columns:minmax(150px,.65fr) minmax(280px,1.55fr) minmax(250px,1.25fr) minmax(280px,1.5fr);gap:12px;min-height:calc(100vh - 125px)}.panel{padding:22px;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(155deg,var(--surface-2),var(--surface));box-shadow:0 18px 50px #0002}.panel h2{font:400 1.35rem Georgia,serif}.panel p{color:var(--muted);line-height:1.55}.panel-number{color:#777;font-size:.7rem;letter-spacing:.15em}.empty{display:grid;place-items:center;text-align:center;max-width:480px;margin:8vh auto;padding:26px}.empty>span{font-size:3rem;color:#8796a5}.empty h3{max-width:300px}.preview-outline{height:55vh;max-height:540px;margin:20px;border:1px dashed #48515a;border-radius:50% 50% 40% 40%}.outfits-page{min-height:100vh;padding:40px}.outfits-page h1{margin-top:28px}.mobile-tabs{display:none}
 @media(max-width:800px){.home{padding:28px 20px}.orbits{grid-template-columns:1fr 1fr;gap:30px 10px}.orb-link,.orb-link:nth-child(4){--float-x:14px;--float-y:22px;grid-column:span 1}.orb-link:last-child{grid-column:1/-1}.orb{width:min(30vw,140px)}.orb-stage{height:calc(min(30vw,140px) + (var(--float-y) * 2))}.toolbar{align-items:flex-start;flex-wrap:wrap}.toolbar h1{font-size:2rem}.toolbar nav{order:3;width:100%;overflow-x:auto;padding-bottom:4px}.wardrobe{padding:18px 14px}.mobile-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:12px;padding:4px;background:var(--surface);border-radius:14px}.mobile-tabs button{min-height:44px;border:0;border-radius:10px;background:transparent;color:var(--muted)}.mobile-tabs button[aria-selected=true]{background:#353a40;color:var(--text)}.wardrobe-grid{display:block;min-height:0}.panel{display:none}.panel.is-active{display:block}.categories.is-active{display:block;margin-bottom:10px}.preview-outline{height:48vh}.outfits-page{padding:25px 18px}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}[data-animated=false] *{animation-play-state:paused!important}
@@ -169,7 +191,7 @@ h1 { margin: 0; font-family: Georgia, serif; font-size: clamp(2.8rem, 6vw, 5.8re
 }
 
 @media(prefers-reduced-motion:reduce) {
-  .orb-stage, .orb, .orb::before, .orb__cloud, .orb__energy, .orb__current { animation: none !important; }
+  .orb-stage, .orb, .orb::before, .orb__cloud, .orb__energy, .orb__current, .orb__veil, .orb__band, .orb__lights, .orb__sparkles, .orb__shine { animation: none !important; }
   .orb__cloud--one { transform: translate(12%, 10%) scale(1.05); }
   .orb__cloud--two { transform: translate(-10%, -8%); }
   .orb__current { transform: rotate(-5deg); }
