@@ -32,15 +32,17 @@ export function OrbNavigation() {
   }, []);
 
   return <nav ref={ref} className="orbits" aria-label="Secciones principales" data-animated={active}>
-    {destinations.map((item, index) => <Link className={`orb-link orb-link--${item.tone}`} href={item.href} key={item.href} style={{ "--delay": `${index * -1.7}s` } as React.CSSProperties}>
-      <span className="orb" aria-hidden="true">
-        <span className="orb__interior">
-          <span className="orb__ambient" />
-          <span className="orb__cloud orb__cloud--one" />
-          <span className="orb__cloud orb__cloud--two" />
-          <span className="orb__cloud orb__cloud--three" />
-          <span className="orb__energy" />
-          <span className="orb__current" />
+    {destinations.map((item, index) => <Link className={`orb-link orb-link--${item.tone}`} href={item.href} key={item.href} style={{ "--delay": `${index * -4.7}s` } as React.CSSProperties}>
+      <span className="orb-stage" aria-hidden="true">
+        <span className="orb">
+          <span className="orb__interior">
+            <span className="orb__ambient" />
+            <span className="orb__cloud orb__cloud--one" />
+            <span className="orb__cloud orb__cloud--two" />
+            <span className="orb__cloud orb__cloud--three" />
+            <span className="orb__energy" />
+            <span className="orb__current" />
+          </span>
         </span>
       </span>
       <strong>{item.label}</strong>
