@@ -1,5 +1,5 @@
-import { cookies } from "next/headers";
-import { getSupabaseConfiguration } from "./config";
+import { cookies } from "next/headers.js";
+import { getSupabaseConfiguration } from "./config.ts";
 
 const ACCESS = "armario_access";
 const REFRESH = "armario_refresh";
