@@ -1,35 +1,6 @@
--- Aplicar después de 003. Es también la transición para instalaciones donde 003
--- ya se aplicó: no renombra firmas, no borra datos y añade el registro operativo.
--- Si un entorno alcanzó una variante de 003 con `p_garment_id`, sustituimos la
--- función de forma explícita (sin CASCADE) y restauramos el permiso mínimo.
-drop function if exists wardrobe_delete(uuid);
-create function wardrobe_delete(garment_id uuid) returns text[] language plpgsql security invoker set search_path=public as $$
-declare paths text[];
-begin
-  select array_agg(i.private_path) into paths from wardrobe_images i where i.garment_id=wardrobe_delete.garment_id and i.owner_id=auth.uid();
-  delete from wardrobe_garments g where g.id=wardrobe_delete.garment_id and g.owner_id=auth.uid();
-  if not found then raise exception 'Prenda no autorizada'; end if;
-  return coalesce(paths,array[]::text[]);
-end $$;
-revoke all on function wardrobe_delete(uuid) from public,anon;
-grant execute on function wardrobe_delete(uuid) to authenticated;
-
-create table if not exists wardrobe_operations (
-  id uuid not null,
-  owner_id uuid not null references auth.users(id) on delete cascade,
-  garment_id uuid not null,
-  kind text not null check (kind in ('create','update')),
-  manifest jsonb not null,
-  state text not null default 'pending' check (state in ('pending','confirmed','cleaning')),
-  result jsonb,
-  created_at timestamptz not null default now(),
-  primary key (owner_id,id)
-);
-alter table wardrobe_operations enable row level security;
-revoke all on wardrobe_operations from public, anon;
-grant select on wardrobe_operations to authenticated;
-create policy operations_select on wardrobe_operations for select to authenticated using(owner_id=auth.uid());
-
+-- Corrección incremental para instalaciones que ya aplicaron 004.
+-- Las únicas funciones elevadas son las transiciones que deben escribir el registro
+-- protegido. Todas derivan el propietario de auth.uid() y validan el manifiesto.
 create or replace function wardrobe_authorize_upload(p_operation_id uuid, p_garment_id uuid, p_images jsonb)
 returns jsonb language plpgsql security definer set search_path=public as $$
 declare op wardrobe_operations%rowtype; selected_garment uuid := coalesce(p_garment_id,gen_random_uuid()); expected jsonb; item jsonb;
@@ -124,6 +95,8 @@ end $$;
 
 revoke all on function wardrobe_authorize_upload(uuid,uuid,jsonb),wardrobe_operation_status(uuid,uuid),wardrobe_abandon_operation(uuid,uuid) from public,anon;
 grant execute on function wardrobe_authorize_upload(uuid,uuid,jsonb),wardrobe_operation_status(uuid,uuid),wardrobe_abandon_operation(uuid,uuid) to authenticated;
+revoke all on function wardrobe_create(uuid,uuid,text,text,text[],text,text,text,text,bigint,text,bigint), wardrobe_update(uuid,uuid,text,text,text[],text,boolean,text,text,text,bigint,text,bigint) from public,anon;
+grant execute on function wardrobe_create(uuid,uuid,text,text,text[],text,text,text,text,bigint,text,bigint), wardrobe_update(uuid,uuid,text,text,text[],text,boolean,text,text,text,bigint,text,bigint) to authenticated;
 
 create or replace function wardrobe_storage_summary()
 returns jsonb language sql security invoker set search_path=public stable as $$

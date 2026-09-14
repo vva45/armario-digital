@@ -20,7 +20,7 @@ export const defaultCategories = [
   "Pijamas",
 ] as const;
 
-export type GarmentImage = { side: "frontal" | "trasera"; reference: string };
+export type GarmentImage = { side: "frontal" | "trasera"; reference: string; byteSize?: number };
 export type Garment = {
   id: string;
   title: string;

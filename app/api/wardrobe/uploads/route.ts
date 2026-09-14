@@ -27,10 +27,17 @@ export async function authorizeUploads(auth: NonNullable<Awaited<ReturnType<type
       method: "POST", headers: { "Content-Type": "application/json" }, body: "{}",
     });
     if (!signed.ok) throw new Error("No se pudo autorizar la subida privada.");
-    const data = await signed.json() as { token: string; url?: string; signedURL?: string };
-    const relative = data.url ?? data.signedURL;
-    if (!data.token || !relative) throw new Error("Storage no devolvió una autorización válida.");
-    uploads.push({ ...image, token: data.token, signedUrl: relative.startsWith("http") ? relative : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1${relative}` });
+    const data = await signed.json() as { url?: string };
+    const relative = data.url;
+    if (!relative) throw new Error("Storage no devolvió una autorización válida.");
+    const project = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!);
+    const signedUrl = new URL(relative.startsWith("/") && !relative.startsWith("/storage/v1/") ? `/storage/v1${relative}` : relative, project);
+    const expectedPath = `/storage/v1/object/upload/sign/${BUCKET}/${image.path}`;
+    const token = signedUrl.searchParams.get("token");
+    if (signedUrl.origin !== project.origin || signedUrl.pathname !== expectedPath || !token) {
+      throw new Error("Storage no devolvió una autorización válida.");
+    }
+    uploads.push({ ...image, signedUrl: signedUrl.toString() });
   }
   return { operationId: authorization.operation_id, garmentId: authorization.garment_id, uploads };
 }
