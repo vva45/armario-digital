@@ -6,5 +6,5 @@ export function generateStaticParams() { return wardrobeUses.map((use) => ({ use
 export default async function UsePage({ params }: { params: Promise<{ use: string }> }) {
   const { use } = await params;
   if (!wardrobeUses.includes(use as WardrobeUse)) notFound();
-  return <WardrobeLayout use={use as WardrobeUse} />;
+  return <WardrobeLayout key={use} use={use as WardrobeUse} />;
 }
