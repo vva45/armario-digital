@@ -45,11 +45,12 @@ test("la confirmación rechaza rutas ajenas y valida el archivo realmente subido
   assert.equal(requests, 1);
 });
 
-test("las rutas separan confirmación, firma y limpieza para no borrar tras guardar", () => {
+test("las rutas distinguen resultado confirmado, desconocido y limpieza reservada", () => {
   const createRoute = readFileSync("app/api/wardrobe/route.ts", "utf8");
   const updateRoute = readFileSync("app/api/wardrobe/[id]/route.ts", "utf8");
-  assert.match(createRoute, /confirmed = true;[\s\S]*visualizationPending: true/);
-  assert.match(createRoute, /!confirmed && images\.length/);
-  assert.match(updateRoute, /confirmed = true;[\s\S]*obsolete_paths/);
-  assert.match(updateRoute, /cleanupIssue[\s\S]*status: cleanupIssue \? 202 : 200/);
+  assert.match(createRoute, /confirmation\.state === "unknown"[\s\S]*recoverable: true/);
+  assert.match(createRoute, /saved: true[\s\S]*visualizationPending: true/);
+  assert.match(createRoute, /reserveCleanup/);
+  assert.match(updateRoute, /confirmation\.state === "unknown"[\s\S]*recoverable: true/);
+  assert.match(updateRoute, /reserveCleanup/);
 });

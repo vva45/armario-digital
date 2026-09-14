@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
-import { authenticatedSupabase } from "../../../data/supabase/server";
-import { validateUses } from "../../../domain/wardrobe";
-import { removeStoredFiles, verifyStoredUploads, type UploadedImage } from "../../../data/storage-operations";
-export type { UploadedImage } from "../../../data/storage-operations";
+import { NextResponse } from "next/server.js";
+import { authenticatedSupabase } from "../../../data/supabase/server.ts";
+import { validateUses } from "../../../domain/wardrobe.ts";
+import { removeStoredFiles, verifyStoredUploads, type UploadedImage } from "../../../data/storage-operations.ts";
+export type { UploadedImage } from "../../../data/storage-operations.ts";
 export const BUCKET = "wardrobe-private";
 export const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 export type Auth = Awaited<ReturnType<typeof authenticatedSupabase>> & { state: "authenticated" };

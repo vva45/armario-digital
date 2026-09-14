@@ -106,11 +106,13 @@ begin
   return jsonb_build_object('obsolete_paths',array_remove(array[old_front,old_back],null));
 end $$;
 
-create or replace function wardrobe_delete(p_garment_id uuid) returns text[] language plpgsql security invoker set search_path=public as $$
+-- Conserva el nombre de parámetro de 002: PostgreSQL no permite renombrarlo con
+-- CREATE OR REPLACE y PostgREST usa ese nombre como clave del cuerpo JSON.
+create or replace function wardrobe_delete(garment_id uuid) returns text[] language plpgsql security invoker set search_path=public as $$
 declare paths text[];
 begin
-  select array_agg(i.private_path) into paths from wardrobe_images i where i.garment_id=p_garment_id and i.owner_id=auth.uid();
-  delete from wardrobe_garments g where g.id=p_garment_id and g.owner_id=auth.uid();
+  select array_agg(i.private_path) into paths from wardrobe_images i where i.garment_id=wardrobe_delete.garment_id and i.owner_id=auth.uid();
+  delete from wardrobe_garments g where g.id=wardrobe_delete.garment_id and g.owner_id=auth.uid();
   if not found then raise exception 'Prenda no autorizada'; end if;
   return coalesce(paths,array[]::text[]);
 end $$;
