@@ -4,11 +4,13 @@ import { NextResponse } from "next/server.js";
 import { authorizeUploads, handleUploadAuthorization } from "../app/api/wardrobe/uploads/route.ts";
 import { confirmWithRecovery, reserveCleanup } from "../data/wardrobe-operations.ts";
 import type { StorageAuth } from "../data/storage-operations.ts";
+import { readFile } from "node:fs/promises";
 
 const owner = "11111111-1111-4111-8111-111111111111";
 const operation = "22222222-2222-4222-8222-222222222222";
 const garment = "33333333-3333-4333-8333-333333333333";
 const metadata = [{ side: "frontal", type: "image/jpeg", size: 12 }];
+process.env.NEXT_PUBLIC_SUPABASE_URL ??= "https://project.invalid";
 function request(body: unknown) { return new Request("http://local/api/wardrobe/uploads", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }); }
 function auth(handler: StorageAuth["request"]): StorageAuth & { state: "authenticated"; user: { id: string } } { return { state: "authenticated", user: { id: owner }, request: handler }; }
 
@@ -21,12 +23,21 @@ test("el controlador responde sin configuración, sin sesión y ante una petici�
   assert.equal((await handleUploadAuthorization(request({ operationId: "arbitrario", images: metadata }), authenticated as never)).status, 400);
 });
 
+test("la migración limita las transiciones elevadas y ata la confirmación al manifiesto", async () => {
+  const sql = await readFile(new URL("../data/migrations/005_secure_operation_transitions.sql", import.meta.url), "utf8");
+  assert.match(sql, /wardrobe_authorize_upload[\s\S]*security definer/);
+  assert.match(sql, /where owner_id=auth\.uid\(\) and id=p_operation_id and garment_id=p_garment_id[\s\S]*for update/);
+  assert.match(sql, /p_front_path<>auth\.uid\(\)::text[\s\S]*Confirmación incompatible/);
+  assert.match(sql, /revoke all on function wardrobe_create[\s\S]*from public,anon/);
+  assert.doesNotMatch(sql, /grant (insert|update|delete).*wardrobe_operations/i);
+});
+
 test("la autorización real enlaza RPC, ruta privada y autorización firmada", async () => {
   const calls: string[] = [];
   const result = await authorizeUploads(auth(async (path, init) => {
     calls.push(`${init?.method ?? "GET"} ${path}`);
     if (path.includes("wardrobe_authorize_upload")) return Response.json({ operation_id: operation, garment_id: garment, images: [{ ...metadata[0], path: `${owner}/${garment}/${operation}/frontal` }] });
-    return Response.json({ token: "token-publicable", url: `/object/upload/sign/wardrobe-private/path?token=token-publicable` });
+    return Response.json({ url: `/object/upload/sign/wardrobe-private/${owner}/${garment}/${operation}/frontal?token=token-publicable` });
   }) as never, { operationId: operation, images: metadata });
   assert.equal(result.garmentId, garment);
   assert.match(result.uploads[0].signedUrl, /\/storage\/v1\/object\/upload\/sign\//);
@@ -37,11 +48,24 @@ test("repetir la autorización conserva prenda, operación y rutas", async () =>
   let rpcCalls = 0;
   const fake = auth(async (path) => {
     if (path.includes("wardrobe_authorize_upload")) { rpcCalls++; return Response.json({ operation_id: operation, garment_id: garment, images: [{ ...metadata[0], path: `${owner}/${garment}/${operation}/frontal` }] }); }
-    return Response.json({ token: `token-${rpcCalls}`, url: "/object/upload/sign/wardrobe-private/path?token=x" });
+    return Response.json({ url: `/object/upload/sign/wardrobe-private/${owner}/${garment}/${operation}/frontal?token=token-${rpcCalls}` });
   });
   const first = await authorizeUploads(fake as never, { operationId: operation, images: metadata });
   const second = await authorizeUploads(fake as never, { operationId: operation, images: metadata });
   assert.equal(first.garmentId, second.garmentId); assert.equal(first.uploads[0].path, second.uploads[0].path);
+});
+
+test("extrae el token de la URL HTTP oficial y rechaza orígenes o rutas manipulados", async () => {
+  const authorization = { operation_id: operation, garment_id: garment, images: [{ ...metadata[0], path: `${owner}/${garment}/${operation}/frontal` }] };
+  for (const url of [
+    `https://otro.invalid/storage/v1/object/upload/sign/wardrobe-private/${owner}/${garment}/${operation}/frontal?token=x`,
+    `/object/upload/sign/wardrobe-private/${owner}/${garment}/${operation}/trasera?token=x`,
+    `/object/upload/sign/wardrobe-private/${owner}/${garment}/${operation}/frontal`,
+  ]) {
+    let call = 0;
+    await assert.rejects(authorizeUploads(auth(async () => Response.json(call++ ? { url } : authorization)) as never,
+      { operationId: operation, images: metadata }), /autorización válida/);
+  }
 });
 
 test("rechaza una edición de otra propietaria antes de firmar Storage", async () => {

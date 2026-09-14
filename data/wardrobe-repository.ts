@@ -2,7 +2,7 @@ import type { Garment, WardrobeUse } from "../domain/wardrobe";
 
 export type GarmentDraft = Pick<Garment, "title" | "category" | "uses" | "note"> & { front?: File; back?: File };
 type UploadSide = "frontal" | "trasera";
-type UploadGrant = { operationId: string; garmentId: string; uploads: { side: UploadSide; path: string; token: string; signedUrl: string }[] };
+type UploadGrant = { operationId: string; garmentId: string; uploads: { side: UploadSide; path: string; signedUrl: string }[] };
 
 export interface WardrobeRepository {
   listByUse(use: WardrobeUse, signal?: AbortSignal): Promise<Garment[]>;
