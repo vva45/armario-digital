@@ -1,9 +1,36 @@
 import { NextResponse } from "next/server";
 import { authenticatedSupabase } from "../../../data/supabase/server";
 import { validateUses } from "../../../domain/wardrobe";
+import { removeStoredFiles, verifyStoredUploads, type UploadedImage } from "../../../data/storage-operations";
+export type { UploadedImage } from "../../../data/storage-operations";
 export const BUCKET = "wardrobe-private";
+export const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+export type Auth = Awaited<ReturnType<typeof authenticatedSupabase>> & { state: "authenticated" };
+
 export async function requireAuth() { const auth = await authenticatedSupabase(); if (auth.state !== "authenticated") return { error: NextResponse.json({ error: auth.state === "unconfigured" ? "Conexión pendiente" : "Inicia sesión" }, { status: auth.state === "unconfigured" ? 503 : 401 }) }; return { auth }; }
-export function validateFields(form: FormData, partial = false) { const title = form.get("title")?.toString().trim(); const category = form.get("category")?.toString().trim(); const usesRaw = form.get("uses")?.toString(); const uses = usesRaw ? JSON.parse(usesRaw) : undefined; if (!partial && (!title || !category || !uses)) throw new Error("Completa título, categoría y usos."); if (title !== undefined && (!title || title.length > 80)) throw new Error("El título no es válido."); if (category !== undefined && (!category || category.length > 50)) throw new Error("La categoría no es válida."); if (uses) { const result = validateUses(uses); if (!result.valid) throw new Error(result.error); } return { title, category, uses, note: form.has("note") ? form.get("note")?.toString().trim() || null : undefined, favorite: form.has("favorite") ? form.get("favorite") === "true" : undefined }; }
-export async function validImage(value: FormDataEntryValue | null) { if (!(value instanceof File) || !value.size) return null; if (value.size > 8 * 1024 * 1024) throw new Error("Cada fotografía debe ocupar como máximo 8 MB."); const allowed: Record<string, number[][]> = { "image/jpeg": [[0xff,0xd8,0xff]], "image/png": [[0x89,0x50,0x4e,0x47]], "image/webp": [[0x52,0x49,0x46,0x46]] }; const signatures = allowed[value.type]; if (!signatures) throw new Error("Usa fotografías JPEG, PNG o WebP."); const bytes = new Uint8Array(await value.slice(0, 12).arrayBuffer()); if (!signatures.some(sig => sig.every((byte, i) => bytes[i] === byte)) || (value.type === "image/webp" && String.fromCharCode(...bytes.slice(8,12)) !== "WEBP")) throw new Error("El contenido de la fotografía no coincide con su formato."); return value; }
-export async function upload(auth: Awaited<ReturnType<typeof authenticatedSupabase>> & { state: "authenticated" }, garmentId: string, side: string, file: File) { const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg"; const path = `${auth.user.id}/${garmentId}/${side}-${crypto.randomUUID()}.${ext}`; const response = await auth.request(`/storage/v1/object/${BUCKET}/${path}`, { method: "POST", headers: { "Content-Type": file.type, "x-upsert": "false" }, body: file }); if (!response.ok) throw new Error(`No se pudo subir la foto ${side}.`); return path; }
-export async function removeFiles(auth: Awaited<ReturnType<typeof authenticatedSupabase>> & { state: "authenticated" }, paths: string[]) { if (!paths.length) return; await auth.request(`/storage/v1/object/${BUCKET}`, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prefixes: paths }) }); }
+export function validateFields(values: Record<string, unknown>, partial = false) { const title = typeof values.title === "string" ? values.title.trim() : undefined; const category = typeof values.category === "string" ? values.category.trim() : undefined; const uses = Array.isArray(values.uses) ? values.uses : undefined; if (!partial && (!title || !category || !uses)) throw new Error("Completa título, categoría y usos."); if (title !== undefined && (!title || title.length > 80)) throw new Error("El título no es válido."); if (category !== undefined && (!category || category.length > 50)) throw new Error("La categoría no es válida."); if (uses) { const result = validateUses(uses.map(String)); if (!result.valid) throw new Error(result.error); } return { title, category, uses, note: values.note === null ? null : typeof values.note === "string" ? values.note.trim() || null : undefined, favorite: typeof values.favorite === "boolean" ? values.favorite : undefined }; }
+
+export function validateImageMetadata(value: unknown): asserts value is UploadedImage[] {
+  if (!Array.isArray(value) || value.length < 1 || value.length > 2) throw new Error("Las fotografías no son válidas.");
+  const sides = new Set<string>();
+  for (const image of value) {
+    if (!image || typeof image !== "object") throw new Error("Las fotografías no son válidas.");
+    const item = image as Partial<UploadedImage>;
+    if (!(["frontal", "trasera"] as unknown[]).includes(item.side) || sides.has(item.side!)) throw new Error("El lado de la fotografía no es válido.");
+    if (!(["image/jpeg", "image/png", "image/webp"] as unknown[]).includes(item.type) || !Number.isInteger(item.size) || Number(item.size) < 1 || Number(item.size) > MAX_IMAGE_BYTES) throw new Error("Cada fotografía debe ser JPEG, PNG o WebP y ocupar como máximo 8 MB.");
+    if (typeof item.path !== "string") throw new Error("La ruta de fotografía no es válida.");
+    sides.add(item.side!);
+  }
+}
+
+export async function verifyUploads(auth: Auth, garmentId: string, operationId: string, images: UploadedImage[], requireFront: boolean) {
+  validateImageMetadata(images);
+  await verifyStoredUploads(auth, garmentId, operationId, images, requireFront);
+}
+
+export async function removeFiles(auth: Auth, paths: string[]) {
+  if (!paths.length) return;
+  await removeStoredFiles(auth, paths);
+}
+
+export async function cleanupOrReport(auth: Auth, paths: string[]) { try { await removeFiles(auth, paths); return undefined; } catch { console.error("Incidencia recuperable al limpiar fotografías privadas", { count: paths.length }); return "No se pudieron limpiar algunas fotografías; vuelve a intentarlo más tarde."; } }

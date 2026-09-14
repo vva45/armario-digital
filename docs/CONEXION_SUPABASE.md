@@ -8,9 +8,15 @@
 
 ## Migraciones y almacenamiento
 
-Aplica en orden `data/migrations/001_private_wardrobe.sql` y `data/migrations/002_secure_private_wardrobe.sql` mediante el editor SQL o CLI oficial. Si `001` ya existe, aplica únicamente `002`: corrige el esquema de forma incremental, activa RLS, crea políticas por propietario, funciones transaccionales y el bucket privado `wardrobe-private`. No hagas público el bucket.
+Para una instalación nueva aplica, en orden, `001_private_wardrobe.sql`, `002_secure_private_wardrobe.sql` y `003_inventory_blockers.sql`. Si 001 y 002 ya se aplicaron, aplica únicamente 003: es una corrección incremental que no borra datos. No apliques 001 y 002 de nuevo ni ejecutes ninguna migración sin revisar primero el estado del proyecto autorizado.
 
-La ruta permanente guardada es `<auth.uid()>/<prenda>/<archivo>`; la aplicación genera URLs firmadas de 15 minutos solo al leer. El límite es 8 MiB y los formatos admitidos son JPEG, PNG y WebP.
+La tercera migración permite la cascada al borrar una prenda, pero conserva comprobaciones diferidas que impiden dejar una prenda existente sin usos o sin frontal. También mantiene la exclusividad de Trabajo, permite reemplazar usos dentro de una misma transacción y sustituye las RPC por firmas sin ambigüedad entre parámetros y columnas.
+
+La ruta permanente guardada es `<auth.uid()>/<prenda>/<operación>/<lado>`; el servidor decide la ruta y emite una autorización limitada para subir cada archivo directamente al bucket privado. Los binarios no atraviesan la función de Vercel: así el límite de cuerpo de las Functions no contradice el límite de 8 MiB por fotografía configurado en Storage. El navegador nunca recibe `service_role` y no puede elegir una ruta de otro propietario.
+
+Tras la subida, el servidor vuelve a comprobar existencia, propietario/ruta, tamaño, tipo y firma binaria antes de confirmar la fila. El identificador de operación hace idempotente el alta: si se pierde la respuesta, el mismo formulario confirma o recupera la misma prenda, sin crear otra. Solo las subidas no confirmadas se intentan limpiar. Una firma de lectura fallida después del commit devuelve “guardada, visualización pendiente” y jamás borra fotos referenciadas. Las incidencias de limpieza son recuperables y se registran sin rutas privadas, URLs firmadas ni credenciales.
+
+Referencias revisadas: [límite de cuerpo de Vercel Functions](https://vercel.com/docs/functions/limitations#request-body-size) y [subidas firmadas de Supabase Storage](https://supabase.com/docs/reference/javascript/storage-from-createsigneduploadurl). La aplicación genera URLs firmadas de 15 minutos solo al leer. Los formatos admitidos son JPEG, PNG y WebP.
 
 ## Autenticación y primera cuenta
 
@@ -24,6 +30,8 @@ En Authentication desactiva el registro público en la configuración del proyec
 4. Prueba con otra cuenta y sin sesión: tablas, RPC y rutas del bucket deben denegar datos ajenos.
 5. Comprueba Casa + Dormir sin duplicado y el rechazo de Trabajo combinado.
 6. Elimina una prenda y confirma que sus filas y objetos autorizados desaparecen.
+7. Simula una respuesta perdida al confirmar un alta y repítela con el mismo formulario: debe conservar un solo ID y las mismas rutas.
+8. Fuerza un fallo de firma de lectura y otro de limpieza: la prenda confirmada debe permanecer, con una incidencia recuperable.
 
 ## Estado de este entorno
 

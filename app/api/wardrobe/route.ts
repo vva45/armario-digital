@@ -1,8 +1,27 @@
 import { NextResponse } from "next/server";
 import { wardrobeUses, type Garment, type WardrobeUse } from "../../../domain/wardrobe";
-import { BUCKET, removeFiles, requireAuth, upload, validImage, validateFields } from "./helpers";
+import { BUCKET, cleanupOrReport, requireAuth, validateFields, verifyUploads, type UploadedImage } from "./helpers";
 
 type DbGarment = Omit<Garment, "images"> & { images: { side: "frontal" | "trasera"; reference: string }[] };
 async function signed(auth: NonNullable<Awaited<ReturnType<typeof requireAuth>>["auth"]>, garment: DbGarment): Promise<Garment> { const images = await Promise.all(garment.images.map(async image => { const response = await auth.request(`/storage/v1/object/sign/${BUCKET}/${image.reference}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ expiresIn: 900 }) }); if (!response.ok) throw new Error("No se pudo abrir una fotografía privada."); const { signedURL } = await response.json(); return { side: image.side, reference: signedURL.startsWith("http") ? signedURL : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1${signedURL}` }; })); return { ...garment, images: images as Garment["images"] }; }
 export async function GET(request: Request) { const result = await requireAuth(); if (result.error) return result.error; const use = new URL(request.url).searchParams.get("use") as WardrobeUse; if (!wardrobeUses.includes(use)) return NextResponse.json({ error: "Uso no válido." }, { status: 400 }); const response = await result.auth.request(`/rest/v1/rpc/wardrobe_list`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requested_use: use }) }); if (!response.ok) return NextResponse.json({ error: "No se pudo cargar el armario." }, { status: response.status }); try { return NextResponse.json(await Promise.all(((await response.json()) as DbGarment[]).map(item => signed(result.auth, item))), { headers: { "Cache-Control": "private, no-store" } }); } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : "No se pudo cargar el armario." }, { status: 502 }); } }
-export async function POST(request: Request) { const result = await requireAuth(); if (result.error) return result.error; const uploaded: string[] = []; try { const form = await request.formData(); const fields = validateFields(form); const front = await validImage(form.get("front")); const back = await validImage(form.get("back")); if (!front) throw new Error("Añade una foto delantera."); const garmentId = crypto.randomUUID(); uploaded.push(await upload(result.auth, garmentId, "frontal", front)); if (back) uploaded.push(await upload(result.auth, garmentId, "trasera", back)); const response = await result.auth.request("/rest/v1/rpc/wardrobe_create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ garment_id: garmentId, garment_title: fields.title, category_name: fields.category, garment_uses: fields.uses, garment_note: fields.note, front_path: uploaded[0], back_path: uploaded[1] ?? null, front_type: front.type, front_size: front.size, back_type: back?.type ?? null, back_size: back?.size ?? null }) }); if (!response.ok) throw new Error("No se pudo guardar la prenda. Las fotografías incompletas se han limpiado."); return NextResponse.json(await signed(result.auth, await response.json())); } catch (error) { await removeFiles(result.auth, uploaded); return NextResponse.json({ error: error instanceof Error ? error.message : "No se pudo guardar la prenda." }, { status: 400 }); } }
+export async function POST(request: Request) {
+  const result = await requireAuth(); if (result.error) return result.error;
+  let images: UploadedImage[] = []; let confirmed = false;
+  try {
+    const body = await request.json() as Record<string, unknown>;
+    const fields = validateFields(body); const garmentId = String(body.garmentId ?? ""); const operationId = String(body.operationId ?? "");
+    images = body.images as UploadedImage[];
+    if (!/^[0-9a-f-]{36}$/i.test(garmentId) || !/^[0-9a-f-]{36}$/i.test(operationId)) throw new Error("La operación no es válida.");
+    await verifyUploads(result.auth, garmentId, operationId, images, true);
+    const front = images.find((image) => image.side === "frontal")!; const back = images.find((image) => image.side === "trasera");
+    const response = await result.auth.request("/rest/v1/rpc/wardrobe_create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ p_garment_id: garmentId, p_operation_id: operationId, p_garment_title: fields.title, p_category_name: fields.category, p_garment_uses: fields.uses, p_garment_note: fields.note, p_front_path: front.path, p_back_path: back?.path ?? null, p_front_type: front.type, p_front_size: front.size, p_back_type: back?.type ?? null, p_back_size: back?.size ?? null }) });
+    if (!response.ok) throw new Error("No se pudo confirmar la prenda.");
+    confirmed = true; const garment = await response.json() as DbGarment;
+    try { return NextResponse.json({ saved: true, garment: await signed(result.auth, garment) }); }
+    catch { return NextResponse.json({ saved: true, garmentId, visualizationPending: true, message: "La prenda está guardada; vuelve a cargar para recuperar sus fotografías." }, { status: 202 }); }
+  } catch (reason) {
+    const cleanupIssue = !confirmed && images.length ? await cleanupOrReport(result.auth, images.map((image) => image.path).filter(Boolean)) : undefined;
+    return NextResponse.json({ saved: false, error: reason instanceof Error ? reason.message : "No se pudo guardar la prenda.", cleanupIssue }, { status: 400 });
+  }
+}
