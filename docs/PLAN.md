@@ -134,3 +134,20 @@ Antes de cerrar arquitectura del preview se realizará una prueba técnica separ
 - Matriz final de requisitos y pruebas de seguridad.
 
 **Aceptación:** escenario L, todos los estados críticos tienen acción útil y el informe distingue probado, no probado y dependencias externas. Publicar o fusionar seguirá requiriendo autorización explícita.
+
+## Encargo 4 — inventario privado y persistente (13 de septiembre de 2026)
+
+### Implementado
+
+- Adaptador HTTP real para Supabase Auth, PostgREST y Storage; sesión `HttpOnly` validada y renovada en servidor.
+- Acceso, cierre de sesión y recuperación; inventario con alta, edición, favoritos, borrado, fotografías privadas y filtros compactos.
+- Migración incremental `002` con propiedad derivada de `auth.uid()`, RLS en todas las relaciones, integridad cruzada, reglas de usos, categoría única y bucket privado.
+- Estados separados: “Conexión pendiente”, “Inicia sesión”, error recuperable y vacío real.
+
+### Probado en este entorno
+
+Los resultados concretos de `npm test`, lint, typecheck y build se registran en la entrega. Se comprobó primero la disponibilidad de navegador antes de decidir la revisión visual.
+
+### Pendiente de conexión o comprobación
+
+No se encontró una instancia Supabase autorizada ni se modificó un servicio remoto. El flujo acceso → subida → guardado → recarga → recuperación, las políticas con dos identidades normales y la limpieza real de objetos deben validarse después de aplicar las migraciones en un entorno autorizado. Esta etapa no se declara completada hasta superar esa prueba.
